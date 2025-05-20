@@ -1,0 +1,63 @@
+{% extends 'index.html' %}
+{% block content %}
+<div class="container">
+    <h5 class="my-3 border-bottom pb-2">질문 등록하기</h5>
+    {% include 'help.html' %}
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!-- 오류표시 Start -->
+        {% if form.errors %}
+        <div class="alert alert-danger" role="alert">
+            {% for field in form %}
+            {% if field.errors %}
+            <div>
+                <b>{{ field.label }}</b>
+                {{ field.errors }}
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        <!-- 오류표시 End -->
+        <div class="mb-3">
+            <label for="subject" class="form-label">제목</label>
+            <input type="text" class="form-control" name="subject" id="subject" value="{{ form.subject.value|default_if_none:'' }}" placeholder="제목을 입력하세요...">
+        </div>
+        <div class="mb-3">
+            <label for="content" class="form-label">내용</label>
+            <textarea class="form-control" name="content" id="markdown-editor" rows="10" placeholder="내용을 입력하세요...">{{ form.content.value|default_if_none:'' }}</textarea>
+        </div>
+        <div class="mb-3">
+            <label for="image" class="mb-1">사진 첨부하기</label>
+            <input type="file" name="image" id="image" class="form-control" accept="image/*">
+        </div>
+        {% if form.instance.image %}
+        <div id="image-preview" class="position-relative mb-3">
+            <img src="{{ form.instance.image.url }}" style="max-width: 200px; border-radius: 4px;">
+            <input type="checkbox" name="delete_image" id="delete_image" class="d-none">
+            <label for="delete_image" class="btn-close position-absolute top-0 end-0 m-2" title="삭제"></label>
+        </div>
+        {% endif %}
+        <div class="text-end">
+            <button type="submit" class="btn btn-primary mb-3">질문 등록하기</button>
+        </div>
+    </form>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const deleteCheckbox = document.getElementById("delete_image");
+    const imagePreview = document.getElementById("image-preview");
+
+    if (deleteCheckbox && imagePreview) {
+      deleteCheckbox.addEventListener("change", function () {
+        if (this.checked) {
+          imagePreview.style.display = "none";
+        } else {
+          imagePreview.style.display = "block";
+        }
+      });
+    }
+  });
+</script>
+{% endblock content %}

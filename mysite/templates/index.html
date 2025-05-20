@@ -1,0 +1,62 @@
+{% load static %}
+<!doctype html>
+<html lang="ko">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <!-- KaTeX -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+                });
+            });
+        </script>
+        <!-- Bootstrap -->
+        <script src="{% static 'bootstrap.min.js' %}"></script>
+        <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+        <!-- SimpleMDE -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+        <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+        <!-- <link rel="stylesheet" type="text/css" href="{% static 'simplemde.css' %}">
+        <script src="{% static 'simplemde.js' %}"></script> -->
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+        <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script> -->
+        <script defer>
+            document.addEventListener("DOMContentLoaded", function () {
+                new SimpleMDE({
+                    element: document.getElementById("markdown-editor"),
+                    spellChecker: false
+                });
+            });
+        </script>
+        <!-- static -->
+        <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+
+        <title>Hello, pybo!</title>
+    </head>
+
+    <body class="d-flex flex-column min-vh-100">
+        <!-- navbar -->
+        {% include "navbar.html" %}
+        <div class="d-flex flex-fill h-100">
+            <!-- 엑기스 Start -->
+            {% block content %}
+            {% endblock content %}
+            <!-- 엑기스 End -->
+        </div>
+        <footer class="bg-dark text-white text-center py-3">
+            <div class="container">
+                <p class="m-0">&copy; 2025 Pybo</p>
+            </div>
+        </footer>
+        {% block script %}
+        {% endblock script %}
+    </body>
+</html>
