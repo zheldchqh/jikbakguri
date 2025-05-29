@@ -4,6 +4,7 @@ from django.db.models import Q
 
 from ..models import Question
 
+''' main '''
 def index(request):
     page = request.GET.get('page', '1')
     kw = request.GET.get('kw', '')  # 검색어
@@ -21,6 +22,7 @@ def index(request):
     context = {'question_list': page_obj, 'page': page, 'kw': kw}
     return render(request, 'pybo/question_list.html', context)
 
+''' question_detail '''
 def detail(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     has_answered = question.answer_set.filter(author=request.user).exists() if request.user.is_authenticated else True
