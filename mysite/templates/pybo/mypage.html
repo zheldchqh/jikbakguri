@@ -1,0 +1,28 @@
+{% extends 'index.html' %}
+{% block content %}
+<div class="px-3 py-3 w-100" style="max-width: 100%;">
+
+  <!-- 프로필 상단 -->
+  <div class="d-flex align-items-center mb-4">
+    <h4 class="mb-0 fw-bold">{{ user.username }}</h4>
+  </div>
+
+  <!-- 계정 정보 -->
+  <div class="mb-3">
+    <h6 class="fw-semibold mb-1">이메일</h6>
+    <p class="mb-0">{{ user.email }}</p>
+  </div>
+
+  <div class="mb-4">
+    <h6 class="fw-semibold mb-1">가입일</h6>
+    <p class="mb-0">{{ user.date_joined|date:"Y년 m월 d일" }}</p>
+  </div>
+
+  <!-- 계정 관리 버튼 -->
+  <div class="d-flex gap-2 mb-4">
+    <a href="{% url 'pybo:edit_profile' %}" class="btn btn-outline-primary">정보 수정</a>
+    <a href="{% url 'pybo:change_password' %}" class="btn btn-outline-secondary">비밀번호 변경</a>
+  </div>
+
+</div>
+{% endblock content %}

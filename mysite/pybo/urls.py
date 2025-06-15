@@ -1,4 +1,6 @@
 from django.urls import path
+from django.contrib.auth import views as auth_views
+from .views.index_views import CustomPasswordChangeForm
 
 from .views import index_views, question_views, answer_views, comment_views
 
@@ -8,6 +10,11 @@ urlpatterns = [
     # index_views.py
     path('', index_views.index, name='index'),
     path('<int:question_id>/', index_views.detail, name='detail'),
+    path('accounts/', index_views.accounts, name='accounts'),
+    path('accounts/edit_profile/', index_views.edit_profile, name='edit_profile'),
+    path('accounts/change_password/', CustomPasswordChangeForm.as_view(), name='change_password'),
+
+    path('users/<str:username>/', index_views.user_profile, name='user_profile'),
 
     # question_views.py
     path('question/create/', question_views.question_create, name='question_create'),

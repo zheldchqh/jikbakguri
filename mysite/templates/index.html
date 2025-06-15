@@ -56,7 +56,12 @@
                 <p class="m-0">&copy; 2025 Pybo</p>
             </div>
         </footer>
-        {% block script %}
-        {% endblock script %}
+        {% if messages %}
+        <script>
+            {% for message in messages %}
+            alert("{{ message|escapejs }}");
+            {% endfor %}
+        </script>
+        {% endif %}
     </body>
 </html>

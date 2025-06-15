@@ -17,7 +17,9 @@
     <div class="card my-3">
         <div class="card-body">
             <div class="bg-light text-black p-3 text-start mb-3 w-100">
-                <div class="fw-bold mb-2 fs-5">{{ question.author.username }}님의 질문</div>
+                <div class="fw-bold mb-2 fs-5">
+                    <a href="{% url 'pybo:user_profile' username=question.author.username %}">
+                    {{ question.author.username }}</a>님의 질문</div>
                 <div class="fs-6">등록: {{ question.create_date }}</div>
                 {% if question.modify_date %}
                 <div class="fs-6">수정: {{ question.modify_date }}</div>
@@ -29,15 +31,12 @@
                 <img src="{{ question.image.url }}" class="img-fluid">
                 {% endif %}
             </div>
-            <a href="javascript:void(0)" data-uri="{% url 'pybo:question_vote' question.id  %}"
-                class="recommend btn btn-sm btn-outline-secondary"> 개추
+            <a href="{% url 'pybo:question_vote' question.id  %}" class="recommend btn btn-sm btn-outline-secondary"> 개추
                 <span class="badge rounded-pill bg-success">{{question.voter.count}}</span>
             </a>
             {% if request.user == question.author %}
-            <a href="{% url 'pybo:question_modify' question.id  %}" 
-                class="btn btn-sm btn-outline-secondary">수정</a>
-            <a href="javascript:void(0)" class="delete btn btn-sm btn-outline-secondary"
-                data-uri="{% url 'pybo:question_delete' question.id  %}">삭제</a>
+            <a href="{% url 'pybo:question_modify' question.id  %}" class="btn btn-sm btn-outline-secondary">수정</a>
+            <a href="{% url 'pybo:question_delete' question.id  %}" class="delete btn btn-sm btn-outline-secondary">삭제</a>
             {% endif %}
         </div>
     </div>
@@ -52,7 +51,9 @@
                 <div class="fs-4 mb-3 text-success fw-bold">✅ 채택된 답변</div>
             {% endif %}
             <div class="bg-light text-black p-3 text-start mb-3 w-100">
-                <div class="fw-bold mb-2 fs-5">{{ answer.author.username }}님의 답변</div>
+                <div class="fw-bold mb-2 fs-5">
+                    <a href="{% url 'pybo:user_profile' username=answer.author.username %}">
+                    {{ answer.author.username }}</a>님의 답변</div>
                 <div class="fs-6">등록: {{ answer.create_date }}</div>
                 {% if answer.modify_date %}
                 <div class="fs-6">수정: {{ answer.modify_date }}</div>
@@ -110,15 +111,12 @@
                 </div>
             </form>
             <div>
-                <a href="javascript:void(0)" data-uri="{% url 'pybo:answer_vote' answer.id  %}"
-                   class="recommend btn btn-sm btn-outline-secondary"> 개추
+                <a href="{% url 'pybo:answer_vote' answer.id  %}" class="recommend btn btn-sm btn-outline-secondary"> 개추
                 <span class="badge rounded-pill bg-success">{{answer.voter.count}}</span>
                 </a>
                 {% if request.user == answer.author %}
-                <a href="{% url 'pybo:answer_modify' answer.id  %}" 
-                class="btn btn-sm btn-outline-secondary">수정</a>
-                <a href="#" class="delete btn btn-sm btn-outline-secondary "
-                   data-uri="{% url 'pybo:answer_delete' answer.id  %}">삭제</a>
+                <a href="{% url 'pybo:answer_modify' answer.id  %}" class="btn btn-sm btn-outline-secondary">수정</a>
+                <a href="{% url 'pybo:answer_delete' answer.id  %}" class="delete btn btn-sm btn-outline-secondary">삭제</a>
                 {% endif %}
             </div>
         </div>
@@ -126,7 +124,7 @@
     {% endfor %}
 
     <!-- 답변 등록 -->
-    <div {% if has_answered or accepted %}style="display: none;"{% endif %}>
+    <div {% if has_answered or accepted or request.user == question.author %}style="display: none;"{% endif %}>
         <h4 class="border-bottom my-3 py-2 fw-bold">답변 등록하기</h4>
         {% include 'help.html' %}
         <form action="{% url 'pybo:answer_create' question.id %}" method="post" class="my-3" enctype="multipart/form-data">
