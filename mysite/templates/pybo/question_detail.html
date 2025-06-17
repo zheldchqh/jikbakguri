@@ -35,6 +35,8 @@
                 </div>
             </div>
             <div class="my-3">
+                {# 질문 추천 버튼 시작 #}
+                {% if user.is_authenticated %}
                 <a href="javascript:void(0)" data-uri="{% url 'pybo:vote_question' question.id %}"
                    class="recommend btn btn-sm btn-outline-secondary">
                     추천
@@ -42,6 +44,17 @@
                     <span class="badge rounded-pill bg-success">{{ question.voter.count }}</span>
                     {% endif %}
                 </a>
+                {% else %}
+                <button class="btn btn-sm btn-outline-secondary" disabled>
+                    추천
+                    {% if question.voter.count > 0 %}
+                    <span class="badge rounded-pill bg-success">{{ question.voter.count }}</span>
+                    {% endif %}
+                </button>
+                <small class="text-muted ms-2">로그인 후 추천할 수 있습니다.</small>
+                {% endif %}
+                {# 질문 추천 버튼 끝 #}
+
                 {% if request.user == question.author %}
                 <a href="{% url 'pybo:question_modify' question.id %}"
                    class="btn btn-sm btn-outline-secondary">수정</a>
@@ -79,6 +92,8 @@
                 </div>
             </div>
             <div class="my-3">
+                {# 답변 추천 버튼 시작 #}
+                {% if user.is_authenticated %}
                 <a href="javascript:void(0)" data-uri="{% url 'pybo:vote_answer' answer.id %}"
                    class="recommend btn btn-sm btn-outline-secondary">
                     추천
@@ -86,6 +101,17 @@
                     <span class="badge rounded-pill bg-success">{{ answer.voter.count }}</span>
                     {% endif %}
                 </a>
+                {% else %}
+                <button class="btn btn-sm btn-outline-secondary" disabled>
+                    추천
+                    {% if answer.voter.count > 0 %}
+                    <span class="badge rounded-pill bg-success">{{ answer.voter.count }}</span>
+                    {% endif %}
+                </button>
+                <small class="text-muted ms-2">로그인 후 추천할 수 있습니다.</small>
+                {% endif %}
+                {# 답변 추천 버튼 끝 #}
+
                 {% if request.user == answer.author %}
                 <a href="{% url 'pybo:answer_modify' answer.id %}"
                    class="btn btn-sm btn-outline-secondary">수정</a>
@@ -135,7 +161,7 @@
                     </div>
                 </form>
             </div>
-            </div>
+        </div>
     </div>
     {% endfor %}
 
@@ -183,5 +209,25 @@ if (answer_id_to_scroll) {
         targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
+
+// ⭐⭐⭐ 이 부분이 '추천' 버튼 클릭 이벤트를 처리하는 코드입니다. ⭐⭐⭐
+// 이 코드가 없거나 잘못되어 있으면 클릭해도 아무 반응이 없습니다.
+const recommend_elements = document.getElementsByClassName("recommend");
+Array.from(recommend_elements).forEach(function(element) {
+    element.addEventListener('click', function() {
+        // 비활성화된 버튼인지 확인 (로그인 안 된 경우)
+        // 로그인 시에는 이 조건문이 false가 되어 내부 로직이 실행됩니다.
+        if (this.tagName === 'BUTTON' && this.disabled) {
+            return; // 비활성화된 <button> 태그는 클릭되어도 아무 동작하지 않음
+        }
+
+        // 로그인된 상태이고, 클릭 가능한 경우
+        if(confirm("정말로 추천하시겠습니까?")) { // 추천 확인 메시지 (선택 사항, 필요 없으면 제거 가능)
+            location.href = this.dataset.uri; // data-uri에 있는 URL로 이동 (서버에 추천 요청)
+        }
+    });
+});
+// ⭐⭐⭐ 여기까지 '추천' 버튼 관련 JavaScript 코드 ⭐⭐⭐
+
 </script>
 {% endblock script %}
