@@ -81,7 +81,7 @@
                 {% if request.user == comment.author %}
                     <!-- 수정 버튼 -->
                     <div class="text-end">
-                        <a href="javascript:void(0);" onclick="toggleEditForm({{ comment.id }})">✏️</a>
+                        <a href="javascript:void(0);" onclick="toggleEditForm('{{ comment.id }}')">✏️</a>
                         <a href="{% url 'pybo:comment_delete' comment.id %}" class="ms-2">🗑️</a>
                     </div>
 
@@ -188,11 +188,14 @@
 <script>
   function toggleEditForm(commentId) {
     const form = document.getElementById("edit-form-" + commentId);
-    if (form.style.display === "none") {
+    const display = window.getComputedStyle(form).display;
+
+    if (display === "none") {
       form.style.display = "block";
     } else {
       form.style.display = "none";
     }
   }
 </script>
+
 {% endblock script %}
