@@ -29,19 +29,13 @@ class QuestionForm(forms.ModelForm):
         }
 
     def save(self, commit=True):
-        # ModelForm의 save 메서드를 호출하여 Question 인스턴스를 가져옵니다.
-        # commit=False로 설정하여 아직 데이터베이스에 저장하지 않습니다.
         question = super().save(commit=False)
 
         if commit:
-            # Question 인스턴스를 먼저 데이터베이스에 저장합니다.
             question.save()
-
-            # 기존에 이 질문에 연결된 해시태그를 모두 지웁니다.
             # 이는 질문을 '수정'할 때, 기존 태그를 새로운 입력으로 덮어쓰기 위함입니다.
             # 만약 기존 태그는 유지하고 새로운 태그만 추가하고 싶다면 이 줄을 제거하세요.
-            question.hashtags.clear() 
-
+            question.hashtags.clear()
             # hashtags_input 필드에서 사용자가 입력한 데이터를 가져옵니다.
             hashtags_data = self.cleaned_data.get('hashtags_input')
             if hashtags_data:
@@ -52,7 +46,6 @@ class QuestionForm(forms.ModelForm):
                     for tag in hashtags_data.replace(',', ' ').split()
                     if tag.strip() # 비어있는 태그 이름은 제외합니다.
                 ]
-                
                 # 각 해시태그 이름을 순회하며 처리합니다.
                 for tag_name in hashtag_names:
                     # 해당 이름의 Hashtag 객체가 이미 존재하면 가져오고, 없으면 새로 생성합니다.

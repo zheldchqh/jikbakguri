@@ -1,13 +1,19 @@
-<h1>#{{ hashtag.name }} 해시태그 질문 목록</h1>
-
-{% if questions %}
-    <ul>
-        {% for question in questions %}
-            <li><a href="{% url 'myapp:detail' question.id %}">{{ question.subject }}</a></li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>이 해시태그와 관련된 질문이 없습니다.</p>
-{% endif %}
-
-<p><a href="{% url 'myapp:hashtag_list' %}">모든 해시태그 보기</a></p>
+{% extends 'index.html' %}
+{% block content %}
+<div class="container my-4">
+    <h2 class="mb-4">#{{ hashtag.name }} 관련 질문</h2>
+    {% if questions %}
+        <div class="list-group">
+            {% for question in questions %}
+                <a href="{% url 'pybo:detail' question.id %}" class="list-group-item list-group-item-action">
+                    <h5 class="mb-1">{{ question.subject }}</h5>
+                    <p class="mb-1 text-muted">{{ question.content|truncatewords:20 }}</p>
+                    <small>작성자: {{ question.author.username }} | 작성일: {{ question.create_date|date:"Y.m.d H:i" }}</small>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-warning">이 해시태그와 연결된 질문이 없습니다.</div>
+    {% endif %}
+</div>
+{% endblock %}

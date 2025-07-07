@@ -12,18 +12,17 @@ def question_create(request):
     if request.method == 'POST':
         form = QuestionForm(request.POST, request.FILES)
         if form.is_valid():
-            if 'delete_image' in request.POST:
-                question.image.delete(save=False)
-                question.image = None
-            question = form.save(commit=False)
-            question.author = request.user
-            question.create_date = timezone.now()
-            question.save()
+            form.instance.author = request.user
+            form.instance.create_date = timezone.now()
+            if 'delete_image' in request.POST and form.instance.image:
+                form.instance.image.delete(save=False)
+                form.instance.image = None
+            question = form.save()
             return redirect('pybo:index')
     else:
         form = QuestionForm()
-    context = {'form': form}
-    return render(request, 'pybo/question_form.html', context)
+
+    return render(request, 'pybo/question_form.html', {'form': form})
 
 
 '''질문 수정'''

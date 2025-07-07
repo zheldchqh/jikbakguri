@@ -7,9 +7,6 @@ from django.contrib.auth.decorators import login_required
 from ..models import Question, Hashtag
 from ..forms import QuestionForm
 
-
-from ..models import Question
-
 def index(request):
     page = request.GET.get('page', '1')
     kw = request.GET.get('kw', '')  # 검색어
@@ -31,8 +28,8 @@ def detail(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     has_answered = question.answer_set.filter(author=request.user).exists() if request.user.is_authenticated else True
     accepted = question.answer_set.filter(is_accepted=True).first()
-    not_accepted = question.answer_set.filter(is_accepted=False)
     context = {'question': question, 'has_answered': has_answered, 'accepted': accepted}
+    print("➡ detail view에서 question.hashtags:", question.hashtags.all())
     return render(request, 'pybo/question_detail.html', context)
 
 def question_list(request):
@@ -57,26 +54,7 @@ def question_detail(request, pk):
     question = get_object_or_404(Question, pk=pk)
     return render(request, 'pybo/question_detail.html', {'question': question})
 
-def question_by_hashtag(request, hashtag_name):
-    hashtag = get_object_or_404(Hashtag, name=hashtag_name)
-    questions = hashtag.question_set.all().order_by('-create_date')
-    hashtags = Hashtag.objects.all()
-    return render(request, 'pybo/question_list.html', {'questions': questions, 'current_hashtag': hashtag, 'hashtags': hashtags})
-
-## 모든 해시태그 목록 뷰
-def hashtag_list(request):
-    """
-    모든 해시태그 목록을 보여주는 뷰
-    """
-    # 데이터베이스에서 모든 Hashtag 객체를 가져와 이름 순으로 정렬합니다.
-    hashtags = Hashtag.objects.all().order_by('name')
-    context = {'hashtags': hashtags} # 'hashtags' 변수로 템플릿에 전달
-    return render(request, 'pybo/hashtag_list.html', context)
-
 def hashtag_detail(request, hashtag_slug):
-    """
-    특정 해시태그가 달린 질문들을 보여주는 뷰
-    """
     # URL에서 전달받은 slug를 이용해 Hashtag 객체를 찾습니다.
     # 해당 Hashtag가 없으면 404 오류를 발생시킵니다.
     hashtag = get_object_or_404(Hashtag, slug=hashtag_slug)
