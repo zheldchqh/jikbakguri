@@ -1,6 +1,6 @@
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.contrib.auth.decorators import login_required
 from django import forms
 from django.contrib.auth.models import User
@@ -95,6 +95,10 @@ def edit_profile(request):
 
 def user_profile(request, username):
     user_obj = get_object_or_404(User, username=username)
+    ranking = User.objects.annotate(
+        accepted_count=Count('author_answer', filter=Q(author_answer__is_accepted=True))
+    ).order_by('-accepted_count')
+    rank_dict = {u.id: idx + 1 for idx, u in enumerate(ranking)}
     try:
         profile = user_obj.userprofile
     except UserProfile.DoesNotExist:
@@ -102,4 +106,5 @@ def user_profile(request, username):
     return render(request, 'pybo/user_profile.html', {
         'user_obj': user_obj,
         'profile': profile,
+        'rank': rank_dict.get(user_obj.id)
     })

@@ -1,8 +1,19 @@
 {% extends "index.html" %}
 {% block content %}
 <div class="container py-5" style="max-width: 600px;">
-  <h2 class="fw-bold mb-3">{{ user_obj.username }}의 프로필</h2>
+<h1 class="fw-bold mb-3">
+  <a href="{% url 'pybo:user_ranking' %}" class="text-decoration-none">
+  {% if rank == 1 %}
+    <span class="medal gold">🥇</span>
+  {% elif rank == 2 %}
+    <span class="medal silver">🥈</span>
+  {% elif rank == 3 %}
+    <span class="medal bronze">🥉</span>
+  {% endif %}
+  </a>
+  {{ user_obj.username }}의 프로필
+</h2>
   <p><strong>이메일:</strong> {{ user_obj.email }}</p>
   <p><strong>상태 메시지:</strong> {{ profile.status|default:"(비어 있음)" }}</p>
 </div>
-{% endblock content %}
+{% endblock content %}`z

@@ -1,2 +1,14 @@
-/mysite/db.sqlite3
-**/__pycache__/
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# VS Code 설정 (선택사항)
+.vscode/
+
+# 환경파일
+.env
+*.env
+
+# 가상환경 폴더
+venv/
+myenv/
