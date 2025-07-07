@@ -7,8 +7,9 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.views import PasswordChangeView
 from ..models import UserProfile
-
+from django.contrib.auth import logout, authenticate
 from ..models import Question
+from ..forms import DeleteAccountForm
 
 ''' question_list.html '''
 def index(request):
@@ -108,3 +109,21 @@ def user_profile(request, username):
         'profile': profile,
         'rank': rank_dict.get(user_obj.id)
     })
+
+@login_required
+def delete_account(request):
+    if request.method == 'POST':
+        form = DeleteAccountForm(request.POST)
+        if form.is_valid():
+            password = form.cleaned_data['password']
+            user = authenticate(username=request.user.username, password=password)
+            if user is not None:
+                user.delete()
+                logout(request)
+                messages.success(request, "계정이 성공적으로 삭제되었습니다.")
+                return redirect('pybo:index')
+            else:
+                messages.error(request, "비밀번호가 올바르지 않습니다.")
+    else:
+        form = DeleteAccountForm()
+    return render(request, 'pybo/delete_account.html', {'form': form})

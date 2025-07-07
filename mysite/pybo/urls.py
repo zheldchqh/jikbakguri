@@ -12,7 +12,7 @@ urlpatterns = [
     path('accounts/', index_views.accounts, name='accounts'),
     path('accounts/edit_profile/', index_views.edit_profile, name='edit_profile'),
     path('accounts/change_password/', CustomPasswordChangeForm.as_view(), name='change_password'),
-
+    path('accounts/delete/', index_views.delete_account, name='delete_account'),
     path('users/<str:username>/', index_views.user_profile, name='user_profile'),
 
     # question_views.py

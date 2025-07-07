@@ -34,3 +34,9 @@ class CommentForm(forms.ModelForm):
         labels = {
             'content': '',
         }
+
+class DeleteAccountForm(forms.Form):
+    password = forms.CharField(
+        label="비밀번호 확인",
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+    )
