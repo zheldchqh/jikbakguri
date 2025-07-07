@@ -28,6 +28,15 @@
                 {% if question.image %}
                 <img src="{{ question.image.url }}" class="img-fluid">
                 {% endif %}
+                {% if question.hashtags.all %} {# 질문에 해시태그가 하나라도 있는지 확인 #}
+                    <div class="mt-3"> {# 마진 상단 추가로 다른 내용과 구분 #}
+                    {% for hashtag in question.hashtags.all %} {# 질문에 연결된 모든 해시태그를 반복 #}
+                    <a href="{% url 'pybo:hashtag_detail' hashtag.slug %}" class="badge bg-info text-dark me-1">
+                    #{{ hashtag.name }}
+                    </a>
+                    {% endfor %}
+                    </div>
+                {% endif %}
             </div>
             <a href="javascript:void(0)" data-uri="{% url 'pybo:question_vote' question.id  %}"
                 class="recommend btn btn-sm btn-outline-secondary"> 개추

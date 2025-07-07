@@ -1,0 +1,13 @@
+<h1>#{{ hashtag.name }} 해시태그 질문 목록</h1>
+
+{% if questions %}
+    <ul>
+        {% for question in questions %}
+            <li><a href="{% url 'myapp:detail' question.id %}">{{ question.subject }}</a></li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>이 해시태그와 관련된 질문이 없습니다.</p>
+{% endif %}
+
+<p><a href="{% url 'myapp:hashtag_list' %}">모든 해시태그 보기</a></p>

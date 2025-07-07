@@ -2,6 +2,12 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from ..models import Question, Hashtag
+from ..forms import QuestionForm
+
+
 from ..models import Question
 
 def index(request):
@@ -28,3 +34,56 @@ def detail(request, question_id):
     not_accepted = question.answer_set.filter(is_accepted=False)
     context = {'question': question, 'has_answered': has_answered, 'accepted': accepted}
     return render(request, 'pybo/question_detail.html', context)
+
+def question_list(request):
+    questions = Question.objects.all().order_by('-create_date')
+    hashtags = Hashtag.objects.all()
+    return render(request, 'pybo/question_list.html', {'questions': questions, 'hashtags': hashtags})
+
+@login_required
+def question_create(request):
+    if request.method == 'POST':
+        form = QuestionForm(request.POST, request.FILES)
+        if form.is_valid():
+            question = form.save(commit=False)
+            question.author = request.user
+            question.save()
+            return redirect('pybo:question_list')
+    else:
+        form = QuestionForm()
+    return render(request, 'pybo/question_form.html', {'form': form})
+
+def question_detail(request, pk):
+    question = get_object_or_404(Question, pk=pk)
+    return render(request, 'pybo/question_detail.html', {'question': question})
+
+def question_by_hashtag(request, hashtag_name):
+    hashtag = get_object_or_404(Hashtag, name=hashtag_name)
+    questions = hashtag.question_set.all().order_by('-create_date')
+    hashtags = Hashtag.objects.all()
+    return render(request, 'pybo/question_list.html', {'questions': questions, 'current_hashtag': hashtag, 'hashtags': hashtags})
+
+## 모든 해시태그 목록 뷰
+def hashtag_list(request):
+    """
+    모든 해시태그 목록을 보여주는 뷰
+    """
+    # 데이터베이스에서 모든 Hashtag 객체를 가져와 이름 순으로 정렬합니다.
+    hashtags = Hashtag.objects.all().order_by('name')
+    context = {'hashtags': hashtags} # 'hashtags' 변수로 템플릿에 전달
+    return render(request, 'pybo/hashtag_list.html', context)
+
+def hashtag_detail(request, hashtag_slug):
+    """
+    특정 해시태그가 달린 질문들을 보여주는 뷰
+    """
+    # URL에서 전달받은 slug를 이용해 Hashtag 객체를 찾습니다.
+    # 해당 Hashtag가 없으면 404 오류를 발생시킵니다.
+    hashtag = get_object_or_404(Hashtag, slug=hashtag_slug)
+    
+    # 해당 해시태그에 연결된 모든 질문을 가져와 최신순으로 정렬합니다.
+    # (Question 모델의 ManyToManyField에 related_name='questions'가 설정되어 있다고 가정)
+    questions = hashtag.questions.all().order_by('-create_date')
+    
+    context = {'hashtag': hashtag, 'questions': questions}
+    return render(request, 'pybo/hashtag_detail.html', context)

@@ -26,6 +26,7 @@ urlpatterns = [
     path('pybo/', include('pybo.urls')),
     path('common/', include('common.urls')),
     path('', index_views.index, name='index'),
+
 ]
 
 if settings.DEBUG:

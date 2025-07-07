@@ -25,6 +25,7 @@ def question_create(request):
     context = {'form': form}
     return render(request, 'pybo/question_form.html', context)
 
+
 '''질문 수정'''
 @login_required(login_url='common:login')
 def question_modify(request, question_id):
