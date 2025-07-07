@@ -2,8 +2,7 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from .views.index_views import CustomPasswordChangeForm
 
-from .views import index_views, question_views, answer_views, comment_views
-
+from .views import index_views, question_views, answer_views, comment_views, ranking_views
 app_name = 'pybo'
 
 urlpatterns = [
@@ -36,4 +35,6 @@ urlpatterns = [
     path('comment/create/<int:answer_id>/', comment_views.comment_create, name='comment_create'),
     path('comment/modify/<int:comment_id>/', comment_views.comment_modify, name='comment_modify'),
     path('comment/delete/<int:comment_id>/', comment_views.comment_delete, name='comment_delete'),
+
+    path('ranking/', ranking_views.user_ranking, name='user_ranking'),    
 ]

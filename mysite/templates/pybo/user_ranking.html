@@ -1,0 +1,14 @@
+{% extends 'index.html' %}
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4 fw-bold">🏆 채택 랭킹 TOP 10</h2>
+    <ol class="list-group list-group-numbered">
+        {% for user in ranking %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="{% url 'pybo:user_profile' username=user.username %}">{{ user.username }}</a>
+            <span class="badge bg-success rounded-pill">{{ user.accepted_count }}회 채택</span>
+        </li>
+        {% endfor %}
+    </ol>
+</div>
+{% endblock content %}
