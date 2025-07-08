@@ -8,7 +8,10 @@ from django.contrib import messages
 from django.contrib.auth.views import PasswordChangeView
 from ..models import UserProfile
 from django.contrib.auth import logout, authenticate
-from ..models import Question
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from ..models import Question, Hashtag
+from ..forms import QuestionForm
 from ..forms import DeleteAccountForm
 
 ''' question_list.html '''
@@ -34,8 +37,8 @@ def detail(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     has_answered = question.answer_set.filter(author=request.user).exists() if request.user.is_authenticated else True
     accepted = question.answer_set.filter(is_accepted=True).first()
-    not_accepted = question.answer_set.filter(is_accepted=False)
     context = {'question': question, 'has_answered': has_answered, 'accepted': accepted}
+    print("➡ detail view에서 question.hashtags:", question.hashtags.all())
     return render(request, 'pybo/question_detail.html', context)
 
 @login_required
@@ -127,3 +130,37 @@ def delete_account(request):
     else:
         form = DeleteAccountForm()
     return render(request, 'pybo/delete_account.html', {'form': form})
+
+def question_list(request):
+    questions = Question.objects.all().order_by('-create_date')
+    hashtags = Hashtag.objects.all()
+    return render(request, 'pybo/question_list.html', {'questions': questions, 'hashtags': hashtags})
+
+@login_required
+def question_create(request):
+    if request.method == 'POST':
+        form = QuestionForm(request.POST, request.FILES)
+        if form.is_valid():
+            question = form.save(commit=False)
+            question.author = request.user
+            question.save()
+            return redirect('pybo:question_list')
+    else:
+        form = QuestionForm()
+    return render(request, 'pybo/question_form.html', {'form': form})
+
+def question_detail(request, pk):
+    question = get_object_or_404(Question, pk=pk)
+    return render(request, 'pybo/question_detail.html', {'question': question})
+
+def hashtag_detail(request, hashtag_slug):
+    # URL에서 전달받은 slug를 이용해 Hashtag 객체를 찾습니다.
+    # 해당 Hashtag가 없으면 404 오류를 발생시킵니다.
+    hashtag = get_object_or_404(Hashtag, slug=hashtag_slug)
+    
+    # 해당 해시태그에 연결된 모든 질문을 가져와 최신순으로 정렬합니다.
+    # (Question 모델의 ManyToManyField에 related_name='questions'가 설정되어 있다고 가정)
+    questions = hashtag.questions.all().order_by('-create_date')
+    
+    context = {'hashtag': hashtag, 'questions': questions}
+    return render(request, 'pybo/hashtag_detail.html', context)

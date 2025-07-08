@@ -15,6 +15,12 @@
             </div>
             {% endif %}
             {% endfor %}
+            {% if form.hashtags_input.errors %}
+            <div>
+                <b>{{ form.hashtags_input.label }}</b>
+                {{ form.hashtags_input.errors }}
+            </div>
+            {% endif %}
         </div>
         {% endif %}
         <div class="mb-3">
@@ -25,6 +31,13 @@
             <label for="content" class="form-label">내용</label>
             <textarea class="form-control" name="content" id="markdown-editor" rows="10" placeholder="내용을 입력하세요...">{{ form.content.value|default_if_none:'' }}</textarea>
         </div>
+
+        <div class="mb-3">
+            {{ form.hashtags_input.label_tag }}
+            {{ form.hashtags_input }}
+            <small class="form-text text-muted">{{ form.hashtags_input.help_text }}</small>
+        </div>
+
         <div class="mb-3">
             <label for="image" class="mb-1">사진 첨부하기</label>
             <input type="file" name="image" id="image" class="form-control" accept="image/*">
