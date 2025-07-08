@@ -1,3 +1,5 @@
+# questions/models.py
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -12,6 +14,8 @@ class Question(models.Model):
     create_date = models.DateTimeField()
     modify_date = models.DateTimeField(null=True, blank=True)
     voter = models.ManyToManyField(User, related_name='voter_question')
+    # 여기에 is_anonymous 필드를 추가하세요
+    is_anonymous = models.BooleanField(default=False) # 기본값은 비익명(False)
 
     def __str__(self):
         return self.subject

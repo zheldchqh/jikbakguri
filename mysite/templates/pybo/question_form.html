@@ -5,7 +5,6 @@
     {% include 'help.html' %}
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <!-- 오류표시 Start -->
         {% if form.errors %}
         <div class="alert alert-danger" role="alert">
             {% for field in form %}
@@ -18,7 +17,6 @@
             {% endfor %}
         </div>
         {% endif %}
-        <!-- 오류표시 End -->
         <div class="mb-3">
             <label for="subject" class="form-label">제목</label>
             <input type="text" class="form-control" name="subject" id="subject" value="{{ form.subject.value|default_if_none:'' }}" placeholder="제목을 입력하세요...">
@@ -38,6 +36,15 @@
             <label for="delete_image" class="btn-close position-absolute top-0 end-0 m-2" title="삭제"></label>
         </div>
         {% endif %}
+
+        {# <<<<<<< 여기에 is_anonymous 체크박스 렌더링 코드를 추가하세요 >>>>>>> #}
+        <div class="form-check mb-3">
+            {{ form.is_anonymous }} {# 이 한 줄이 <input type="checkbox" ...> 태그를 렌더링합니다. #}
+            <label class="form-check-label" for="{{ form.is_anonymous.id_for_label }}">
+                {{ form.is_anonymous.label }} {# forms.py에 설정된 '익명으로 질문하기' 레이블을 표시합니다. #}
+            </label>
+        </div>
+
         <div class="text-end">
             <button type="submit" class="btn btn-primary mb-3">질문 등록하기</button>
         </div>
@@ -45,19 +52,19 @@
 </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const deleteCheckbox = document.getElementById("delete_image");
-    const imagePreview = document.getElementById("image-preview");
+    document.addEventListener("DOMContentLoaded", function () {
+        const deleteCheckbox = document.getElementById("delete_image");
+        const imagePreview = document.getElementById("image-preview");
 
-    if (deleteCheckbox && imagePreview) {
-      deleteCheckbox.addEventListener("change", function () {
-        if (this.checked) {
-          imagePreview.style.display = "none";
-        } else {
-          imagePreview.style.display = "block";
+        if (deleteCheckbox && imagePreview) {
+            deleteCheckbox.addEventListener("change", function () {
+                if (this.checked) {
+                    imagePreview.style.display = "none";
+                } else {
+                    imagePreview.style.display = "block";
+                }
+            });
         }
-      });
-    }
-  });
+    });
 </script>
 {% endblock content %}
