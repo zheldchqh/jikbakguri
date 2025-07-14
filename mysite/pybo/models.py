@@ -2,20 +2,21 @@
 
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils.text import slugify # Hashtag 모델의 save 메서드를 위해 추가 (필요 시)
+from django.utils.text import slugify
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class Question(models.Model):
-    # 첫 번째 Question 모델의 내용 유지
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author_question')
-    subject = models.CharField(max_length=200) # subject 필드 유지
+    subject = models.CharField(max_length=200)
     content = models.TextField()
     image = models.ImageField(upload_to="question_images/", null=True, blank=True)
     create_date = models.DateTimeField()
     modify_date = models.DateTimeField(null=True, blank=True)
     voter = models.ManyToManyField(User, related_name='voter_question')
+    is_anonymous = models.BooleanField(default=False)
 
-    # 두 번째 Question 모델에서 가져온 hashtags 필드 추가
     hashtags = models.ManyToManyField('Hashtag', blank=True, related_name='questions') # related_name 추가 권장
 
     def __str__(self):
@@ -50,3 +51,16 @@ class Hashtag(models.Model):
 
     def __str__(self):
         return self.name
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    status = models.CharField(max_length=255, blank=True, default='')
+
+    def __str__(self):
+        return f"{self.user.username}의 프로필"
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)

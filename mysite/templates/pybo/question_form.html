@@ -5,24 +5,6 @@
     {% include 'help.html' %}
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {% if form.errors %}
-        <div class="alert alert-danger" role="alert">
-            {% for field in form %}
-            {% if field.errors %}
-            <div>
-                <b>{{ field.label }}</b>
-                {{ field.errors }}
-            </div>
-            {% endif %}
-            {% endfor %}
-            {% if form.hashtags_input.errors %}
-            <div>
-                <b>{{ form.hashtags_input.label }}</b>
-                {{ form.hashtags_input.errors }}
-            </div>
-            {% endif %}
-        </div>
-        {% endif %}
         <div class="mb-3">
             <label for="subject" class="form-label">제목</label>
             <input type="text" class="form-control" name="subject" id="subject" value="{{ form.subject.value|default_if_none:'' }}" placeholder="제목을 입력하세요...">
@@ -49,6 +31,12 @@
             <label for="delete_image" class="btn-close position-absolute top-0 end-0 m-2" title="삭제"></label>
         </div>
         {% endif %}
+        <div class="form-check mb-3">
+            {{ form.is_anonymous }}
+            <label class="form-check-label" for="{{ form.is_anonymous.id_for_label }}">
+                {{ form.is_anonymous.label }}
+            </label>
+        </div>
         <div class="text-end">
             <button type="submit" class="btn btn-primary mb-3">질문 등록하기</button>
         </div>

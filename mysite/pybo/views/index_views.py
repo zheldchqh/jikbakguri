@@ -4,8 +4,14 @@ from django.db.models import Q
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from ..models import Question, Hashtag
+from ..models import Question, Hashtag, UserProfile
 from ..forms import QuestionForm
+from ..forms import CustomPasswordChange
+
+from django.contrib.auth.views import PasswordChangeView
+from django import forms
+from django.contrib.auth.models import User
+from django.contrib import messages
 
 def index(request):
     page = request.GET.get('page', '1')
@@ -29,7 +35,6 @@ def detail(request, question_id):
     has_answered = question.answer_set.filter(author=request.user).exists() if request.user.is_authenticated else True
     accepted = question.answer_set.filter(is_accepted=True).first()
     context = {'question': question, 'has_answered': has_answered, 'accepted': accepted}
-    print("➡ detail view에서 question.hashtags:", question.hashtags.all())
     return render(request, 'pybo/question_detail.html', context)
 
 def question_list(request):
@@ -65,3 +70,71 @@ def hashtag_detail(request, hashtag_slug):
     
     context = {'hashtag': hashtag, 'questions': questions}
     return render(request, 'pybo/hashtag_detail.html', context)
+
+@login_required
+def accounts(request):
+    return render(request, 'pybo/mypage.html', {'user': request.user})
+
+class EditProfileForm(forms.ModelForm):
+    status = forms.CharField(
+        max_length=255,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '상태 메시지를 입력하세요...'})
+    )
+    class Meta:
+        model = User
+        fields = ['username', 'email']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+        }
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.get('instance')
+        initial = kwargs.setdefault('initial', {})
+        if self.user:
+            try:
+                initial['status'] = self.user.userprofile.status
+            except UserProfile.DoesNotExist:
+                pass
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({'class': 'form-control'})
+
+    def save(self, commit=True):
+        user = super().save(commit)
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        profile.status = self.cleaned_data['status']
+        if commit:
+            profile.save()
+        return user
+
+class CustomPasswordChangeForm(PasswordChangeView):
+    form_class = CustomPasswordChange
+    template_name = 'pybo/change_password.html'
+    success_url = '/pybo/accounts/'
+    def form_valid(self, form):
+        messages.success(self.request, "비밀번호가 성공적으로 변경되었습니다.")
+        return super().form_valid(form)
+
+@login_required
+def edit_profile(request):
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "프로필이 성공적으로 변경되었습니다.")
+            return redirect('pybo:accounts')
+    else:
+        form = EditProfileForm(instance=request.user)
+    return render(request, 'pybo/edit_profile.html', {'form': form})
+
+def user_profile(request, username):
+    user_obj = get_object_or_404(User, username=username)
+    try:
+        profile = user_obj.userprofile
+    except UserProfile.DoesNotExist:
+        profile = None
+    return render(request, 'pybo/user_profile.html', {
+        'user_obj': user_obj,
+        'profile': profile,
+    })

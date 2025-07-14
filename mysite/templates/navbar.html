@@ -18,8 +18,20 @@
                     <a class="nav-link" href="{% url 'common:login' %}">로그인</a>
                     {% endif %}
                 </li>
+                <li class="">
+                    <a class="nav-link" href="{% url 'pybo:user_ranking' %}"><i class="fas fa-trophy mx-2"></i>랭킹</a>
+                </li>
             </ul>
+            {% if user.is_authenticated %}
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'pybo:user_profile' username=user.username %}"><i class="fas fa-user mx-2"></i>내 프로필</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'pybo:accounts' %}"><i class="fas fa-info-circle mx-2"></i>내 정보</a>
+                </li>
+            </ul>
+            {% endif %}
         </div>
     </div>
 </nav>
-<!-- ASDFSAFD -->

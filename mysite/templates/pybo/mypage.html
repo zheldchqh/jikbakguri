@@ -1,0 +1,20 @@
+{% extends 'index.html' %}
+{% block content %}
+
+<div class="container py-5" style="max-width: 600px;">
+    <!-- 프로필 상단 -->
+    <h2 class="fw-bold mb-3">{{ user.username }}님의 정보</h2>
+    {% if user.userprofile.status %}
+    <p><i class="fas fa-comment-alt mx-2"></i>{{ user.userprofile.status }}</p>
+    {% endif %}
+    <hr>
+    <p><i class="fas fa-envelope mx-2"></i>{{ user.email }}</p>
+    <p><i class="fas fa-calendar-alt mx-2"></i>{{ user.date_joined|date:"Y년 m월 d일" }}~</p>
+
+    <!-- 계정 관리 버튼 -->
+    <div class="d-flex gap-2 mb-4">
+        <a href="{% url 'pybo:edit_profile' %}" class="btn btn-outline-primary">정보 수정</a>
+        <a href="{% url 'pybo:change_password' %}" class="btn btn-outline-secondary">비밀번호 변경</a>
+    </div>
+</div>
+{% endblock content %}

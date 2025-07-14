@@ -1,3 +1,7 @@
 .CodeMirror {
     background-color: white !important;
 }
+
+body {
+    font-family: 'Noto Sans KR', sans-serif !important;
+}

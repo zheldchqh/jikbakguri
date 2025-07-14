@@ -41,7 +41,11 @@
                     <span class="text-danger small mx-2">개추 {{ question.voter.count }}</span>
                     {% endif %}
                 </td>
-                <td>{{ question.author.username }}</td>
+                {% if question.is_anonymous %}
+                <td>익명</td>
+                {% else %}
+                <td><a href="{% url 'pybo:user_profile' username=question.author.username %}">{{ question.author.username }}</a></td>
+                {% endif %}
                 <td>{{ question.create_date }}</td>
             </tr>
             {% endfor %}

@@ -4,6 +4,8 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <!-- font family -->
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
         <!-- KaTeX -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
         <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -28,6 +30,8 @@
         <script src="{% static 'simplemde.js' %}"></script> -->
         <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
         <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script> -->
+        <!-- Fontawesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <script defer>
             document.addEventListener("DOMContentLoaded", function () {
                 new SimpleMDE({
@@ -38,7 +42,7 @@
         </script>
         <!-- static -->
         <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
-
+        <!-- title -->
         <title>Hello, pybo!</title>
     </head>
 
@@ -56,7 +60,12 @@
                 <p class="m-0">&copy; 2025 Pybo</p>
             </div>
         </footer>
-        {% block script %}
-        {% endblock script %}
+        {% if messages %}
+        <script>
+            {% for message in messages %}
+            alert("{{ message|escapejs }}");
+            {% endfor %}
+        </script>
+        {% endif %}
     </body>
 </html>

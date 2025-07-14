@@ -1,0 +1,12 @@
+{% extends "index.html" %}
+{% block content %}
+<div class="container py-5" style="max-width: 600px;">
+    <h2 class="fw-bold mb-3">{{ user_obj.username }}님의 프로필</h2>
+    {% if profile.status %}
+    <p><i class="fas fa-comment-alt mx-2"></i>{{ profile.status }}</p>
+    {% endif %}
+    <hr>
+    <p><i class="fas fa-envelope mx-2"></i>{{ user_obj.email }}</p>
+    <p><i class="fas fa-calendar-alt mx-2"></i>{{ user.date_joined|date:"Y년 m월 d일" }}~</p>
+</div>
+{% endblock content %}

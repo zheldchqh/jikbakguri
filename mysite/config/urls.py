@@ -23,7 +23,7 @@ from pybo.views import index_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('pybo/', include('pybo.urls')),
+    path('pybo/', include(('pybo.urls', 'pybo'), namespace='pybo')),
     path('common/', include('common.urls')),
     path('', index_views.index, name='index'),
 
