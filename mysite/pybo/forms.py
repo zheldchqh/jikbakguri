@@ -1,7 +1,8 @@
 from django import forms
-from pybo.models import Question, Answer, Comment, Hashtag
+from .models import Question, Answer, Comment, Hashtag
 from django.contrib.auth.forms import PasswordChangeForm
-
+from django.utils.text import slugify
+import re
 
 class QuestionForm(forms.ModelForm):
     hashtags_input = forms.CharField(
@@ -19,7 +20,7 @@ class QuestionForm(forms.ModelForm):
 
     class Meta:
         model = Question
-        fields = ['subject', 'content', 'image', 'is_anonymous']
+        fields = ['subject', 'content', 'image', 'is_anonymous', 'hashtags_input']
         labels = {
             'subject': '제목',
             'content': '내용',
@@ -29,21 +30,32 @@ class QuestionForm(forms.ModelForm):
             'content': forms.Textarea(attrs={'id': 'markdown-editor'})
         }
 
-    def save(self, commit=True):
+    def save(self, commit=True, **kwargs):
         question = super().save(commit=False)
-
+        delete_image_flag = kwargs.get('delete_image_flag', False)
+        if delete_image_flag and question.image:
+            question.image.delete(save=False)
+            question.image = None
         if commit:
             question.save()
             question.hashtags.clear()
             hashtags_data = self.cleaned_data.get('hashtags_input')
             if hashtags_data:
+                processed_hashtags = hashtags_data.replace(",", " ")
+                processed_hashtags = re.sub(r'\s+', ' ', processed_hashtags).strip()
                 hashtag_names = [
-                    tag.strip().replace('#', '')
-                    for tag in hashtags_data.replace(',', ' ').split()
-                    if tag.strip()
+                    tag.replace("#", "").strip()
+                    for tag in processed_hashtags.split()
+                    if tag.replace("#", "").strip()
                 ]
                 for tag_name in hashtag_names:
-                    hashtag, created = Hashtag.objects.get_or_create(name=tag_name)
+                    tag_slug = slugify(tag_name, allow_unicode=True)
+                    
+                    try:
+                        hashtag = Hashtag.objects.get(slug=tag_slug)
+                    except Hashtag.DoesNotExist:
+                        hashtag = Hashtag.objects.create(name=tag_name, slug=tag_slug)
+
                     question.hashtags.add(hashtag)
         return question
 

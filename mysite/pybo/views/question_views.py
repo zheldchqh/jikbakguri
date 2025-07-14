@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 
 from ..forms import QuestionForm
-from ..models import Question
+from ..models import Question, Hashtag
 
 '''질문 등록'''
 @login_required(login_url='common:login')
@@ -12,12 +12,14 @@ def question_create(request):
     if request.method == 'POST':
         form = QuestionForm(request.POST, request.FILES)
         if form.is_valid():
-            form.instance.author = request.user
-            form.instance.create_date = timezone.now()
-            if 'delete_image' in request.POST and form.instance.image:
-                form.instance.image.delete(save=False)
-                form.instance.image = None
-            question = form.save()
+            question = form.save(commit=False)
+            question.author = request.user
+            question.create_date = timezone.now()
+            delete_image_flag = 'delete_image' in request.POST
+            question = form.save(
+                commit=True,
+                delete_image_flag=delete_image_flag,
+            )
             return redirect('pybo:index')
     else:
         form = QuestionForm()
@@ -38,14 +40,10 @@ def question_modify(request, question_id):
             question = form.save(commit=False)
             question.modify_date = timezone.now()
             delete_checked = 'delete_image' in request.POST
-            image_uploaded = request.FILES.get('image', None)
-            if delete_checked:
-                if question.image:
-                    question.image.delete(save=False)
-                    question.image = None
-                if image_uploaded:
-                    question.image = image_uploaded
-            question.save()
+            question = form.save(
+                commit=True,
+                delete_image_flag=delete_checked,
+            )
             return redirect('pybo:detail', question_id=question.id)
     else:
         form = QuestionForm(instance=question)

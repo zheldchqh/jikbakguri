@@ -17,7 +17,7 @@ class Question(models.Model):
     voter = models.ManyToManyField(User, related_name='voter_question')
     is_anonymous = models.BooleanField(default=False)
 
-    hashtags = models.ManyToManyField('Hashtag', blank=True, related_name='questions') # related_name 추가 권장
+    hashtags = models.ManyToManyField('Hashtag', blank=True, related_name='questions')
 
     def __str__(self):
         return self.subject
@@ -41,12 +41,12 @@ class Comment(models.Model):
 
 class Hashtag(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    # slug 필드 추가 (URL 친화적 이름을 위해 강력히 권장)
-    slug = models.SlugField(max_length=50, unique=True, allow_unicode=True) 
+    slug = models.SlugField(max_length=50, unique=True, allow_unicode=True, blank=True)
 
     def save(self, *args, **kwargs):
-        # slugify를 사용하여 name으로부터 slug 자동 생성
-        self.slug = slugify(self.name, allow_unicode=True) 
+        if not self.slug:
+            from django.utils.text import slugify
+            self.slug = slugify(self.name, allow_unicode=True)
         super().save(*args, **kwargs)
 
     def __str__(self):

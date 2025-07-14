@@ -42,34 +42,15 @@ def question_list(request):
     hashtags = Hashtag.objects.all()
     return render(request, 'pybo/question_list.html', {'questions': questions, 'hashtags': hashtags})
 
-@login_required
-def question_create(request):
-    if request.method == 'POST':
-        form = QuestionForm(request.POST, request.FILES)
-        if form.is_valid():
-            question = form.save(commit=False)
-            question.author = request.user
-            question.save()
-            return redirect('pybo:question_list')
-    else:
-        form = QuestionForm()
-    return render(request, 'pybo/question_form.html', {'form': form})
-
 def question_detail(request, pk):
     question = get_object_or_404(Question, pk=pk)
     return render(request, 'pybo/question_detail.html', {'question': question})
 
 def hashtag_detail(request, hashtag_slug):
-    # URL에서 전달받은 slug를 이용해 Hashtag 객체를 찾습니다.
-    # 해당 Hashtag가 없으면 404 오류를 발생시킵니다.
     hashtag = get_object_or_404(Hashtag, slug=hashtag_slug)
-    
-    # 해당 해시태그에 연결된 모든 질문을 가져와 최신순으로 정렬합니다.
-    # (Question 모델의 ManyToManyField에 related_name='questions'가 설정되어 있다고 가정)
     questions = hashtag.questions.all().order_by('-create_date')
-    
     context = {'hashtag': hashtag, 'questions': questions}
-    return render(request, 'pybo/hashtag_detail.html', context)
+    return render(request, 'pybo/hashtag_list.html', context)
 
 @login_required
 def accounts(request):
